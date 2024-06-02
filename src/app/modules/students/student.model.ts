@@ -123,6 +123,7 @@ const studentSchema = new Schema<Student>(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     contactNo: {
       type: String,
@@ -171,5 +172,15 @@ const studentSchema = new Schema<Student>(
   },
   { timestamps: true },
 );
+
+// hide deleted:soft data before showing
+studentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
 
 export const StudentModel = model<Student>('Student', studentSchema);
