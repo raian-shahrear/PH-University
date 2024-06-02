@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
 
-export interface Username {
+export interface TUsername {
   firstName: string;
   middleName?: string;
   lastName: string;
 }
 
-export interface Guardian {
+export interface TGuardian {
   fatherName: string;
   fatherOccupation: string;
   fatherContactNo: string;
@@ -15,7 +15,7 @@ export interface Guardian {
   motherContactNo: string;
 }
 
-export interface LocalGuardian {
+export interface TLocalGuardian {
   name: string;
   occupation: string;
   contactNo: string;
@@ -23,10 +23,10 @@ export interface LocalGuardian {
   relationship: string;
 }
 
-export type Student = {
+export type TStudent = {
   id: string;
   user: Types.ObjectId;
-  name: Username;
+  name: TUsername;
   gender: 'male' | 'female' | 'other';
   dateOfBirth: string;
   email: string;
@@ -35,8 +35,8 @@ export type Student = {
   bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   presentAddress: string;
   permanentAddress: string;
-  guardian: Guardian;
-  localGuardian?: LocalGuardian;
+  guardian: TGuardian;
+  localGuardian?: TLocalGuardian;
   profileImage?: string;
   admissionSemester: string;
   isDeleted: boolean;

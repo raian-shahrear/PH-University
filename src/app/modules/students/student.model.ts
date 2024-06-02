@@ -1,12 +1,12 @@
 import { Schema, model } from 'mongoose';
 import {
-  Guardian,
-  LocalGuardian,
-  Student,
-  Username,
+  TGuardian,
+  TLocalGuardian,
+  TStudent,
+  TUsername,
 } from './student.interface';
 
-const usernameSchema = new Schema<Username>(
+const usernameSchema = new Schema<TUsername>(
   {
     firstName: {
       type: String,
@@ -26,7 +26,7 @@ const usernameSchema = new Schema<Username>(
   { _id: false },
 );
 
-const guardianSchema = new Schema<Guardian>(
+const guardianSchema = new Schema<TGuardian>(
   {
     fatherName: {
       type: String,
@@ -62,7 +62,7 @@ const guardianSchema = new Schema<Guardian>(
   { _id: false },
 );
 
-const localGuardianSchema = new Schema<LocalGuardian>(
+const localGuardianSchema = new Schema<TLocalGuardian>(
   {
     name: {
       type: String,
@@ -93,7 +93,7 @@ const localGuardianSchema = new Schema<LocalGuardian>(
   { _id: false },
 );
 
-const studentSchema = new Schema<Student>(
+const studentSchema = new Schema<TStudent>(
   {
     id: {
       type: String,
@@ -183,4 +183,4 @@ studentSchema.pre('findOne', function (next) {
   next();
 });
 
-export const StudentModel = model<Student>('Student', studentSchema);
+export const StudentModel = model<TStudent>('Student', studentSchema);
