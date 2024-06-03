@@ -161,9 +161,9 @@ const studentSchema = new Schema<TStudent>(
       type: String,
     },
     admissionSemester: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicSemesterModel',
       required: true,
-      trim: true,
     },
     isDeleted: {
       type: Boolean,
