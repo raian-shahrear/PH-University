@@ -5,17 +5,28 @@ import mongoose from 'mongoose';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 import { TStudent } from './student.interface';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 // get all student
-const getAllStudentsFromDB = async () => {
-  const result = await StudentModel.find()
-    .populate('admissionSemester')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    });
+const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+  const studentQuery = new QueryBuilder(
+    StudentModel.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fieldLimiting();
+  const result = studentQuery.queryModel;
   return result;
 };
 
