@@ -2,7 +2,6 @@ import httpStatus from 'http-status';
 import { TErrorSources } from '../interface/error';
 
 const handleDuplicateError = (err: any) => {
-  console.log(err.message);
   const matches = err.message.match(/"([^"]*)"/);
   const extractedMessage = matches && matches[1];
   const errorSources: TErrorSources = [

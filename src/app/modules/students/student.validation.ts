@@ -8,9 +8,11 @@ const createUserNameValidationSchema = z.object({
     required_error: 'First name is required!',
     invalid_type_error: 'Name must be a string!',
   }),
-  middleName: z.string({
-    invalid_type_error: 'Name must be a string!',
-  }),
+  middleName: z
+    .string({
+      invalid_type_error: 'Name must be a string!',
+    })
+    .optional(),
   lastName: z.string({
     required_error: 'Last name is required!',
     invalid_type_error: 'Name must be a string!',
@@ -176,24 +178,22 @@ const updateLocalGuardianValidationSchema = z.object({
 
 const updateStudentValidationSchema = z.object({
   body: z.object({
-    student: z.object({
-      name: updateUserNameValidationSchema.optional(),
-      gender: z.enum(['male', 'female', 'other']).optional(),
-      dateOfBirth: z.string().optional(),
-      email: z.string().email().optional(),
-      contactNo: z.string().optional(),
-      emergencyContactNo: z.string().optional(),
-      bloodGroup: z
-        .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
-        .optional(),
-      presentAddress: z.string().optional(),
-      permanentAddress: z.string().optional(),
-      guardian: updateGuardianValidationSchema.optional(),
-      localGuardian: updateLocalGuardianValidationSchema.optional(),
-      profileImage: z.string().optional(),
-      admissionSemester: z.string().optional(),
-      academicDepartment: z.string().optional(),
-    }),
+    name: updateUserNameValidationSchema.optional(),
+    gender: z.enum(['male', 'female', 'other']).optional(),
+    dateOfBirth: z.string().optional(),
+    email: z.string().email().optional(),
+    contactNo: z.string().optional(),
+    emergencyContactNo: z.string().optional(),
+    bloodGroup: z
+      .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+      .optional(),
+    presentAddress: z.string().optional(),
+    permanentAddress: z.string().optional(),
+    guardian: updateGuardianValidationSchema.optional(),
+    localGuardian: updateLocalGuardianValidationSchema.optional(),
+    profileImage: z.string().optional(),
+    admissionSemester: z.string().optional(),
+    academicDepartment: z.string().optional(),
   }),
 });
 // ===================================================================

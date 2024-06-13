@@ -1,4 +1,3 @@
-import path from 'path';
 import { StudentModel } from './student.model';
 import { UserModel } from '../users/user.model';
 import mongoose from 'mongoose';
@@ -9,7 +8,15 @@ import QueryBuilder from '../../builder/QueryBuilder';
 
 // get all student
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+  const studentSearchableFields = [
+    'email',
+    'name.firstName',
+    'name.middleName',
+    'name.lastName',
+    'presentAddress',
+    'permanentAddress',
+    'contactNo',
+  ];
   const studentQuery = new QueryBuilder(
     StudentModel.find()
       .populate('admissionSemester')
@@ -26,7 +33,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     .sort()
     .paginate()
     .fieldLimiting();
-  const result = studentQuery.queryModel;
+  const result = await studentQuery.queryModel;
   return result;
 };
 
