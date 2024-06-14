@@ -35,19 +35,21 @@ const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
 // get single faculty
 const getSingleFacultyFromDB = async (id: string) => {
   // checking the id exist or not
-  const isFacultyExist = await FacultyModel.findOne({ id });
+  const isFacultyExist = await FacultyModel.findById(id);
   if (!isFacultyExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This faculty is not exist!');
   }
 
-  const result = await FacultyModel.findOne({ id });
+  const result = await FacultyModel.findById(id)
+    .populate('academicFaculty')
+    .populate('academicDepartment');
   return result;
 };
 
 // update a faculty
 const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
   // checking the id exist or not
-  const isFacultyExist = await FacultyModel.findOne({ id });
+  const isFacultyExist = await FacultyModel.findById(id);
   if (!isFacultyExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This faculty is not exist!');
   }
@@ -61,8 +63,8 @@ const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
     }
   }
 
-  const result = await FacultyModel.findOneAndUpdate(
-    { id },
+  const result = await FacultyModel.findByIdAndUpdate(
+    id,
     { $set: modifiedData },
     { new: true, runValidators: true },
   );
@@ -72,7 +74,7 @@ const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
 // delete a faculty
 const deleteFacultyFromDB = async (id: string) => {
   // checking the id exist or not
-  const isFacultyExist = await FacultyModel.findOne({ id });
+  const isFacultyExist = await FacultyModel.findById(id);
   if (!isFacultyExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This faculty is not exist!');
   }
@@ -82,19 +84,9 @@ const deleteFacultyFromDB = async (id: string) => {
   try {
     // start session
     session.startTransaction();
-    // delete user (transaction-1)
-    const deleteUser = await UserModel.findOneAndUpdate(
-      { id },
-      { isDeleted: true },
-      { new: true, session },
-    );
-    if (!deleteUser) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete this user!');
-    }
-
-    // delete faculty (transaction-2)
-    const deleteFaculty = await FacultyModel.findOneAndUpdate(
-      { id },
+    // delete faculty (transaction-1)
+    const deleteFaculty = await FacultyModel.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
@@ -104,6 +96,18 @@ const deleteFacultyFromDB = async (id: string) => {
         'Failed to delete this faculty!',
       );
     }
+
+    // delete user (transaction-2)
+    const userId = deleteFaculty.user;
+    const deleteUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { isDeleted: true },
+      { new: true, session },
+    );
+    if (!deleteUser) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete this user!');
+    }
+
     // end session
     await session.commitTransaction();
     await session.endSession();

@@ -32,19 +32,19 @@ const getAllAdminFromDB = async (query: Record<string, unknown>) => {
 // get single admin
 const getSingleAdminFromDB = async (id: string) => {
   // checking the id exist or not
-  const isAdminExist = await AdminModel.findOne({ id });
+  const isAdminExist = await AdminModel.findById(id);
   if (!isAdminExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This admin is not exist!');
   }
 
-  const result = await AdminModel.findOne({ id });
+  const result = await AdminModel.findById(id);
   return result;
 };
 
 // update an admin
 const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>) => {
   // checking the id exist or not
-  const isAdminExist = await AdminModel.findOne({ id });
+  const isAdminExist = await AdminModel.findById(id);
   if (!isAdminExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This admin is not exist!');
   }
@@ -59,8 +59,8 @@ const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>) => {
     }
   }
 
-  const result = await AdminModel.findOneAndUpdate(
-    { id },
+  const result = await AdminModel.findByIdAndUpdate(
+    id,
     { $set: modifiedData },
     { new: true, runValidators: true },
   );
@@ -70,7 +70,7 @@ const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>) => {
 // delete an admin
 const deleteAdminFromDB = async (id: string) => {
   // checking the id exist or not
-  const isAdminExist = await AdminModel.findOne({ id });
+  const isAdminExist = await AdminModel.findById(id);
   if (!isAdminExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This admin is not exist!');
   }
@@ -80,19 +80,9 @@ const deleteAdminFromDB = async (id: string) => {
   try {
     // start session
     session.startTransaction();
-    // delete user (transaction-1)
-    const deleteUser = await UserModel.findOneAndUpdate(
-      { id },
-      { $set: { isDeleted: true } },
-      { new: true, session },
-    );
-    if (!deleteUser) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete this user!');
-    }
-
-    // delete admin (transaction-2)
-    const deleteAdmin = await AdminModel.findOneAndUpdate(
-      { id },
+    // delete admin (transaction-1)
+    const deleteAdmin = await AdminModel.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
@@ -102,6 +92,18 @@ const deleteAdminFromDB = async (id: string) => {
         'Failed to delete this admin!',
       );
     }
+
+    // delete user (transaction-2)
+    const userId = deleteAdmin.user;
+    const deleteUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: { isDeleted: true } },
+      { new: true, session },
+    );
+    if (!deleteUser) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete this user!');
+    }
+
     // end session
     await session.commitTransaction();
     await session.endSession();

@@ -17,8 +17,8 @@ const getAllAdmin = catchAsync(async (req, res) => {
 
 // get single admin
 const getSingleAdmin = catchAsync(async (req, res) => {
-  const { adminId } = req.params;
-  const result = await AdminServices.getSingleAdminFromDB(adminId);
+  const { id } = req.params;
+  const result = await AdminServices.getSingleAdminFromDB(id);
 
   // send response
   sendResponse(res, {
@@ -30,8 +30,8 @@ const getSingleAdmin = catchAsync(async (req, res) => {
 
 // delete an admin
 const deleteAdmin = catchAsync(async (req, res) => {
-  const { adminId } = req.params;
-  const result = await AdminServices.deleteAdminFromDB(adminId);
+  const { id } = req.params;
+  const result = await AdminServices.deleteAdminFromDB(id);
 
   // send response
   sendResponse(res, {
@@ -43,9 +43,9 @@ const deleteAdmin = catchAsync(async (req, res) => {
 
 // update an admin
 const updateAdmin = catchAsync(async (req, res) => {
-  const { adminId } = req.params;
+  const { id } = req.params;
   const admin = req.body;
-  const result = await AdminServices.updateAdminIntoDB(adminId, admin);
+  const result = await AdminServices.updateAdminIntoDB(id, admin);
 
   // send response
   sendResponse(res, {

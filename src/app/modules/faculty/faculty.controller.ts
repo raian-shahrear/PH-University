@@ -17,8 +17,8 @@ const getAllFaculty = catchAsync(async (req, res) => {
 
 // get single faculty
 const getSingleFaculty = catchAsync(async (req, res) => {
-  const { facultyId } = req.params;
-  const result = await FacultyServices.getSingleFacultyFromDB(facultyId);
+  const { id } = req.params;
+  const result = await FacultyServices.getSingleFacultyFromDB(id);
 
   // send response
   sendResponse(res, {
@@ -30,8 +30,8 @@ const getSingleFaculty = catchAsync(async (req, res) => {
 
 // delete a faculty
 const deleteFaculty = catchAsync(async (req, res) => {
-  const { facultyId } = req.params;
-  const result = await FacultyServices.deleteFacultyFromDB(facultyId);
+  const { id } = req.params;
+  const result = await FacultyServices.deleteFacultyFromDB(id);
 
   // send response
   sendResponse(res, {
@@ -43,9 +43,9 @@ const deleteFaculty = catchAsync(async (req, res) => {
 
 // update a faculty
 const updateFaculty = catchAsync(async (req, res) => {
-  const { facultyId } = req.params;
+  const { id } = req.params;
   const faculty = req.body;
-  const result = await FacultyServices.updateFacultyIntoDB(facultyId, faculty);
+  const result = await FacultyServices.updateFacultyIntoDB(id, faculty);
 
   // send response
   sendResponse(res, {
