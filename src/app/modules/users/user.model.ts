@@ -1,9 +1,9 @@
 import { Schema, model } from 'mongoose';
-import { TUser } from './user.interface';
+import { TUser, UserStaticModel } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, UserStaticModel>(
   {
     id: {
       type: String,
@@ -13,6 +13,7 @@ const userSchema = new Schema<TUser>(
     password: {
       type: String,
       required: true,
+      select: 0,
     },
     needsPassChange: {
       type: Boolean,
@@ -26,6 +27,9 @@ const userSchema = new Schema<TUser>(
       type: String,
       enum: ['active', 'blocked'],
       default: 'active',
+    },
+    passwordChangedAt: {
+      type: Date,
     },
     isDeleted: {
       type: Boolean,
@@ -44,10 +48,17 @@ userSchema.pre('save', async function (next) {
   );
   next();
 });
-// set empty password after saving
-userSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
-});
 
-export const UserModel = model<TUser>('User', userSchema);
+//id validation using static method
+userSchema.statics.isUserExistByCustomId = async function (id) {
+  return await UserModel.findOne({ id }).select('+password');
+};
+//password matching using static method
+userSchema.statics.isPasswordMatched = async function (
+  planeTextPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(planeTextPassword, hashedPassword);
+};
+
+export const UserModel = model<TUser, UserStaticModel>('User', userSchema);

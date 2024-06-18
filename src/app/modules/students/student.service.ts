@@ -19,6 +19,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   ];
   const studentQuery = new QueryBuilder(
     StudentModel.find()
+      .populate('user')
       .populate('admissionSemester')
       .populate({
         path: 'academicDepartment',
@@ -40,7 +41,15 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
 // get single student
 const getSingleStudentFromDB = async (id: string) => {
   // checking the id exist or not
-  const isStudentExist = await StudentModel.findById(id);
+  const isStudentExist = await StudentModel.findById(id)
+    .populate('user')
+    .populate('admissionSemester')
+    .populate({
+      path: 'academicDepartment',
+      populate: {
+        path: 'academicFaculty',
+      },
+    });
   if (!isStudentExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This student is not exist!');
   }
